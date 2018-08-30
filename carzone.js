@@ -15,10 +15,19 @@ async function getPic(url) {
   // await page.click('#navigation > div > ul:nth-child(1) > li:nth-child(2) > ul > li:nth-child(1) > a');
   await page.waitFor(1000);
   await page.click('#search-results > div.search-state.clearfix.bottom > div.limit > a:nth-child(3) > span');
-  // await page.waitFor(500);
-  // await page.click('#browse-links > div > div > div > ul:nth-child(1) > li:nth-child(3) > a');
+  await page.waitFor(500);
+
+  // Click Next in Pagination
+  // await page.click('li.next-page.paginate.last-item > a > span > span');
+
+  // Wait til there's no more pagination
+  // await page.waitForFunction(() => !document.querySelector('#search-results > div.search-state.clearfix.top > div.paginate-results > ul > li.next-page.paginate.last-item > a > span'));
+  console.log('no more pagination')
+
   await page.waitFor(2000);
-  const numberOfResults = await page.evaluate(() => document.querySelector('#search-results > div.search-state.clearfix.top > div.advert-counter.search-info').innerText);
+  const resultDetails = await page.evaluate(() => document.querySelector('#search-results > div.search-state.clearfix.top > div.advert-counter.search-info').innerText);
+  let numberOfResults = resultDetails.split(/(\s+)/);
+  numberOfResults = numberOfResults[4];
 
   const result = await page.evaluate(() => {
     let data = []; // Create an empty array
@@ -40,12 +49,12 @@ async function getPic(url) {
     return data; // Return our data array
   });
 
-  console.log(numberOfResults);
+  console.log(`Found ${numberOfResults} cars`);
   let priceArray = result.map(car => car.price).sort();
 
   console.log('Prices', priceArray);
 
-  await page.screenshot({ path: `carzone-${carName}-${modelName}.png` });
+  await page.screenshot({ path: `images/carzone-${carName}-${modelName}.png` });
 
   let scrape = async () => {
     return 'test';
